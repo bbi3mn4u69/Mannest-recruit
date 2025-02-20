@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
+import { SyncService } from "~/service/assest_sync.service";
 
 export async function GET() {
   const requestUrl = "https://669ce22d15704bb0e304842d.mockapi.io/assets";
@@ -16,8 +18,9 @@ export async function GET() {
         ]);
         continue;
       } else {
-        const data = await res.json();
-        return NextResponse.json({ message: "success", content: data });
+        const datas = await res.json();
+        await SyncService.SyncRecordFromAPI(datas)
+        return NextResponse.json({ message: "success", content: datas });
       }
     } catch (e) {
       console.log(e);

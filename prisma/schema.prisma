@@ -10,14 +10,12 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-enum location_name {
-    DA_NANG
-    HA_NOI
-    HO_CHI_MINH
-    NHA_TRANG
-    CAN_THO
+enum status {
+    actived
+    inactived
 }
 
+// deprecate
 model Post {
     id        Int      @id @default(autoincrement())
     name      String
@@ -27,40 +25,24 @@ model Post {
     @@index([name])
 }
 
-model Organization {
-    id        String     @id @default(cuid())
-    name      String? // e.g., "PNS", "PLJ"
-    locations Location[]
-    createdAt DateTime   @default(now())
-    updatedAt DateTime   @updatedAt
-
-    @@index([name])
-}
-
 model Location {
-    id             String       @id @default(cuid())
-    name           location_name // e.g., "Da Nang", "Ha Noi"
-    status         String // "actived" or "unactive"
-    organization   Organization @relation(fields: [organizationId], references: [id])
-    organizationId String
-    assets         Asset[]
-    createdAt      DateTime     @default(now())
-    updatedAt      DateTime     @updatedAt
-
-    @@index([name])
-    @@index([organizationId])
-}
-
-model Asset {
-    id          String   @id @default(cuid())
-    type        String // e.g., "CIA1-10"
-    serial      String   
-    description String?
-    location    Location @relation(fields: [locationId], references: [id])
-    locationId  String
+    id          Int      @id @default(autoincrement())
+    location_Id Int
+    assets      Assets[]
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
+}
 
-    @@index([type])
-    @@index([locationId])
+model Assets {
+    id              Int      @id @default(autoincrement())
+    type            String // e.g., "CIA1-10"
+    status          status
+    serial          String
+    description     String?
+    location        Location @relation(fields: [locationId], references: [id])
+    locationId      Int
+    assetsCreatedAt DateTime
+    assetsUpdatedAt DateTime
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
 }
